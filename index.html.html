@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+<h2>Simulador de Regime Tributário</h2>
+
+<div id="tela1">
+  <label for="nome">Nome:</label><br>
+  <input type="text" id="nome" name="nome"><br>
+  <p>Regime Tributário:</p>
+  <input type="radio" id="simples" name="regime" value="Simples Nacional">
+  <label for="simples">Simples Nacional</label><br>
+  <input type="radio" id="real" name="regime" value="Lucro Real">
+  <label for="real">Lucro Real</label><br>
+  <input type="radio" id="presumido" name="regime" value="Lucro Presumido">
+  <label for="presumido">Lucro Presumido</label><br>
+  <button onclick="proximaEtapa()">Próxima etapa</button>
+</div>
+
+<div id="tela2" style="display: none;">
+  <label for="ramo">Ramo da Empresa:</label><br>
+  <select id="ramo" name="ramo">
+    <option value="">Selecione...</option>
+    <option value="Clínica Veterinária / Agropecuária">Clínica Veterinária / Agropecuária</option>
+    <option value="Mercado / Distr. de alimentos / Açougue">Mercado / Distr. de alimentos / Açougue</option>
+    <option value="Cosméticos e perfumaria">Cosméticos e perfumaria</option>
+    <option value="Transportadora de mercadorias">Transportadora de mercadorias</option>
+    <option value="Conveniência (loja de bebidas)">Conveniência (loja de bebidas)</option>
+    <option value="Farmácias">Farmácias</option>
+    <option value="Turismo / Hotel / Transporte de pessoas">Turismo / Hotel / Transporte de pessoas</option>
+    <option value="Loja de Peças / Pneus">Loja de Peças / Pneus</option>
+    <option value="Indústria em geral">Indústria em geral</option>
+  </select><br>
+  <label for="faturamento">Faturamento Médio Mensal:</label><br>
+  <select id="faturamento" name="faturamento">
+    <option value="">Selecione...</option>
+    <option value="Até R$ 10.000,00">Até R$ 10.000,00</option>
+    <option value="Até R$ 50.000,00">Até R$ 50.000,00</option>
+    <option value="Até R$ 100.000,00">Até R$ 100.000,00</option>
+    <option value="Entre R$ 100.000,00 e R$ 500.000,00">Entre R$ 100.000,00 e R$ 500.000,00</option>
+    <option value="Acima de R$ 500.000,00">Acima de R$ 500.000,00</option>
+  </select><br>
+  <label for="funcionarios">Número de Funcionários:</label><br>
+  <select id="funcionarios" name="funcionarios">
+    <option value="">Selecione...</option>
+    <option value="Nenhum">Nenhum</option>
+    <option value="De 1 a 5">De 1 a 5</option>
+    <option value="De 5 a 15">De 5 a 15</option>
+    <option value="De 15 a 50">De 15 a 50</option>
+    <option value="Acima de 50">Acima de 50</option>
+  </select><br>
+  <label for="pagou">Pagou valores de IRPJ/CSLL desde 2018?</label><br>
+  <select id="pagou" name="pagou">
+    <option value="">Selecione...</option>
+    <option value="Sim">Sim</option>
+    <option value="Não">Não</option>
+    <option value="Somente alguns períodos">Somente alguns períodos</option>
+  </select><br>
+  <label for="acao">Já tem ação de recuperação tributária?</label><br>
+  <select id="acao" name="acao">
+    <option value="">Selecione...</option>
+    <option value="Sim, de exclusão de ICMS antes de 2018">Sim, de exclusão de ICMS antes de 2018</option>
+    <option value="Sim, depois de 2018">Sim, depois de 2018</option>
+    <option value="Não">Não</option>
+    <option value="Não tem certeza">Não tem certeza</option>
+  </select><br>
+  <button onclick="simularResultado()">Simular Resultado</button>
+</div>
+
+<div id="tela3" style="display: none;">
+  <p id="resultado"></p>
+  <p id="aprovacao"></p>
+</div>
+
+<script>
+function proximaEtapa() {
+  var nome = document.getElementById("nome").value;
+  var regime = document.querySelector('input[name="regime"]:checked').value;
+  if (nome && regime) {
+    document.getElementById("tela1").style.display = "none";
+    document.getElementById("tela2").style.display = "block";
+  } else {
+    alert("Responda corretamente");
+  }
+}
+
+function simularResultado() {
+  var nome = document.getElementById("nome").value;
+  var regime = document.querySelector('input[name="regime"]:checked').value;
+  var ramo = document.getElementById("ramo").value;
+  var faturamento = document.getElementById("faturamento").value;
+  var funcionarios = document.getElementById("funcionarios").value;
+  var pagou = document.getElementById("pagou").value;
+  var acao = document.getElementById("acao").value;
+  if (ramo && faturamento && funcionarios && pagou && acao) {
+    document.getElementById("tela2").style.display = "none";
+    document.getElementById("tela3").style.display = "block";
+    document.getElementById("resultado").innerHTML = "Nome do Indivíduo: " + nome + "<br>Você respondeu que seu regime tributário é: " + regime + "<br>Seu ramo é: " + ramo + "<br>Seu faturamento é: " + faturamento + "<br>Número de funcionários: " + funcionarios + "<br>Pagou valores de IRPJ/CSLL desde 2018: " + pagou + "<br>Já tem ação de recuperação tributária: " + acao;
+    
+    var aprovado = (regime == "Lucro Presumido" || regime == "Lucro Real") && (ramo == "Bar" || ramo == "Posto de Combustível") && (faturamento == "Até R$ 10.000,00" || faturamento == "Até R$ 50.000,00" || faturamento == "Até R$ 100.000,00" || faturamento == "Entre R$ 100.000,00 e R$ 500.000,00") && (acao == "Sim, depois de 2018" || acao == "Não" || acao == "Não tem certeza");
+    document.getElementById("aprovacao").innerHTML = "Exclusão do ICMS da base de cálculo do Pis/Cofins: " + (aprovado ? "Aprovado" : "Negado");
+    
+    var resultado2;
+    if (regime == "Lucro Real" && (ramo == "Clínica Médica / Odontologia" || ramo == "Bar / Padaria / Pizzaria / Restaurante" || ramo == "Posto de Combustível / Distribuidora de Gás" || ramo == "Clínica Veterinária / Agropecuária" || ramo == "Mercado / Distr. de alimentos / Açougue" || ramo == "Cosméticos e perfumaria" || ramo == "Transportadora de mercadorias" || ramo == "Conveniência (loja de bebidas)" || ramo == "Farmácias" || ramo == "Turismo / Hotel / Transporte de pessoas" || ramo == "Loja de Peças / Pneus" || ramo == "Indústria em geral") && (faturamento == "Até R$ 10.000,00" || faturamento == "Até R$ 50.000,00" || faturamento == "Até R$ 100.000,00" || faturamento == "Entre R$ 100.000,00 e R$ 500.000,00" || faturamento == "Acima de R$ 500.000,00")) {
+      resultado2 = "Insumos Aprovado";
+    } else {
+      resultado2 = "Insumos Negado";
+    }
+    document.getElementById("aprovacao").innerHTML += "<br>" + resultado2;
+    
+    var resultado3;
+    if (regime == "Lucro Real" && (ramo == "Bar / Padaria / Pizzaria / Restaurante" || ramo == "Posto de Combustível / Distribuidora de Gás" || ramo == "Clínica Veterinária / Agropecuária" || ramo == "Mercado / Distr. de alimentos / Açougue" || ramo == "Cosméticos e perfumaria" || ramo == "Transportadora de mercadorias" || ramo == "Conveniência (loja de bebidas)" || ramo == "Farmácias" || ramo == "Turismo / Hotel / Transporte de pessoas" || ramo == "Loja de Peças / Pneus" || ramo == "Indústria em geral") && (faturamento == "Até R$ 10.000,00" || faturamento == "Até R$ 50.000,00" || faturamento == "Até R$ 100.000,00" || faturamento == "Entre R$ 100.000,00 e R$ 500.000,00" || faturamento == "Acima de R$ 500.000,00") && (pagou == "Sim" || pagou == "Somente alguns períodos")) {
+      resultado3 = "Subvenção Aprovado";
+    } else {
+      resultado3 = "Subvenção Negado";
+    }
+    document.getElementById("aprovacao").innerHTML += "<br>" + resultado3;
+    
+    var resultado4;
+    if (regime == "Lucro Real" && ramo == "Mercado / Distr. de alimentos / Açougue" && (faturamento == "Até R$ 10.000,00" || faturamento == "Até R$ 50.000,00" || faturamento == "Até R$ 100.000,00" || faturamento == "Entre R$ 100.000,00 e R$ 500.000,00")) {
+      resultado4 = "PIS/Cofins nas aquisições Aprovado";
+    } else {
+      resultado4 = "PIS/Cofins nas aquisições Negado";
+    }
+    document.getElementById("aprovacao").innerHTML += "<br>" + resultado4;
+    
+    var resultado5;
+    if ((regime == "Lucro Presumido" || regime == "Lucro Real") && (ramo == "Clínica Médica / Odontologia" || ramo == "Bar / Padaria / Pizzaria / Restaurante" || ramo == "Posto de Combustível / Distribuidora de Gás" || ramo == "Clínica Veterinária / Agropecuária" || ramo == "Mercado / Distr. de alimentos / Açougue" || ramo == "Cosméticos e perfumaria" || ramo == "Transportadora de mercadorias" || ramo == "Conveniência (loja de bebidas)" || ramo == "Farmácias" || ramo == "Turismo / Hotel / Transporte de pessoas" || ramo == "Loja de Peças / Pneus" || ramo == "Indústria em geral") && (pagou == "Sim" || pagou == "Somente alguns períodos")) {
+      resultado5 = "Exclusão do ICMS, ISS, PIS/Cofins na BC do IRPJ e CSLL Aprovado";
+    } else {
+      resultado5 = "Exclusão do ICMS, ISS, PIS/Cofins na BC do IRPJ e CSLL Negado";
+    }
+    document.getElementById("aprovacao").innerHTML += "<br>" + resultado5;
+    
+    var resultado6;
+    if (regime == "Lucro Real" && ramo == "Posto de Combustível / Distribuidora de Gás") {
+      resultado6 = "Crédito Diesel/GLP LC 192-22 Aprovado";
+    } else {
+      resultado6 = "Crédito Diesel/GLP LC 192-22 Negado";
+    }
+    document.getElementById("aprovacao").innerHTML += "<br>" + resultado6;
+    
+    var resultado7;
+    if ((regime == "Lucro Presumido" || regime == "Lucro Real") && (acao == "Sim, de exclusão do ICMS anterior 2017" || acao == "Sim, dentro dos últimos 5 anos")) {
+      resultado7 = "Não recolhimento do IRPJ e CSLL sobre correção SELIC Aprovado";
+    } else {
+      resultado7 = "Não recolhimento do IRPJ e CSLL sobre correção SELIC Negado";
+    }
+    document.getElementById("aprovacao").innerHTML += "<br>" + resultado7;
+    
+
+        var resultado8;
+    if (funcionarios == "De 05 a 15" || funcionarios == "De 15 a 50" || funcionarios == "Acima de 50") {
+      resultado8 = "Sistema S - Teto 20 salários Aprovado";
+    } else {
+      resultado8 = "Sistema S - Teto 20 salários Negado";
+    }
+    document.getElementById("aprovacao").innerHTML += "<br>" + resultado8;
+    
+    var resultado9;
+    if ((funcionarios == "De 01 a 05" || funcionarios == "De 05 a 15" || funcionarios == "De 15 a 50" || funcionarios == "Acima de 50")) {
+      resultado9 = "Verbas indenizatórias Aprovado";
+    } else {
+      resultado9 = "Verbas indenizatórias Negado";
+    }
+    document.getElementById("aprovacao").innerHTML += "<br>" + resultado9;
+    
+    var resultado10;
+    if ((regime == "Lucro Presumido" || regime == "Lucro Real") && (ramo == "Clínica Médica / Odontologia" || ramo == "Bar / Padaria / Pizzaria / Restaurante" || ramo == "Posto de Combustível / Distribuidora de Gás" || ramo == "Clínica Veterinária / Agropecuária" || ramo == "Mercado / Distr. de alimentos / Açougue" || ramo == "Cosméticos e perfumaria" || ramo == "Transportadora de mercadorias" || ramo == "Conveniência (loja de bebidas)" || ramo == "Farmácias" || ramo == "Turismo / Hotel / Transporte de pessoas" || ramo == "Loja de Peças / Pneus" || ramo == "Indústria em geral") && (faturamento == "Até R$ 10.000,00" || faturamento == "Até R$ 50.000,00" || faturamento == "Até R$ 100.000,00" || faturamento == "Entre R$ 100.000,00 e R$ 500.000,00" || faturamento == "Acima de R$ 500.000,00")) {
+      resultado10 = "Exclusão do PIS/Cofins na própria base Aprovado";
+    } else {
+      resultado10 = "Exclusão do PIS/Cofins na própria base Negado";
+    }
+    document.getElementById("aprovacao").innerHTML += "<br>" + resultado10;
+    
+    var resultado11;
+    if ((regime == "Lucro Presumido" || regime == "Lucro Real") && (ramo == "Clínica Médica / Odontologia")) {
+      resultado11 = "Exclusão ICMS-ST BC PIS/Cofins Aprovado";
+    } else {
+      resultado11 = "Exclusão ICMS-ST BC PIS/Cofins Negado";
+    }
+    document.getElementById("aprovacao").innerHTML += "<br>" + resultado11;
+    
+    var resultado12;
+    if ((regime == "Lucro Presumido" || regime == "Lucro Real") && (ramo == "Clínica Médica / Odontologia")) {
+      resultado12 = "Equiparação a serviços hospitalares Aprovado";
+    } else {
+      resultado12 = "Equiparação a serviços hospitalares Negado";
+    }
+    document.getElementById("aprovacao").innerHTML += "<br>" + resultado12;
+    
+        var resultado12;
+    if ((regime == "Lucro Presumido" || regime == "Lucro Real") && ramo == "Turismo / Hotel / Transporte de Pessoas" && (faturamento == "Até R$ 10.000,00" || faturamento == "Até R$ 50.000,00" || faturamento == "Até R$ 100.000,00" || faturamento == "Entre R$ 100.000,00 e R$ 500.000,00" || faturamento == "Acima de R$ 500.000,00")) {
+      resultado12 = "PERSE Aprovado";
+    } else {
+      resultado12 = "PERSE Negado";
+    }
+    document.getElementById("aprovacao").innerHTML += "<br>" + resultado12;
+    
+    var resultado13;
+    if (regime == "Lucro Real" && ramo == "Mercado / Distr. de alimentos / Açougue" && (faturamento == "Até R$ 10.000,00" || faturamento == "Até R$ 50.000,00" || faturamento == "Até R$ 100.000,00" || faturamento == "Entre R$ 100.000,00 e R$ 500.000,00")) {
+      resultado13 = "Perdas gerais Aprovado";
+    } else {
+      resultado13 = "Perdas gerais Negado";
+    }
+    document.getElementById("aprovacao").innerHTML += "<br>" + resultado13;
+    
+    var resultado14;
+    if ((regime == "Lucro Presumido" || regime == "Lucro Real") && (ramo == "Clínica Médica / Odontologia" || ramo == "Bar / Padaria / Pizzaria / Restaurante" || ramo == "Posto de Combustível / Distribuidora de Gás" || ramo == "Clínica Veterinária / Agropecuária" || ramo == "Mercado / Distr. de alimentos / Açougue" || ramo == "Cosméticos e perfumaria" || ramo == "Transportadora de mercadorias" || ramo == "Conveniência (loja de bebidas)" || ramo == "Farmácias" || ramo == "Turismo / Hotel / Transporte de pessoas" || ramo == "Loja de Peças / Pneus" || ramo == "Indústria em geral") && (faturamento == "Até R$ 10.000,00" || faturamento == "Até R$ 50.000,00" || faturamento == "Até R$ 100.000,00" || faturamento == "Entre R$ 100.000,00 e R$ 500.000,00" || faturamento == "Acima de R$ 500.000,00")) {
+      resultado14 = "Exclusão do ISS da BC PIS/Cofins Aprovado";
+    } else {
+      resultado14 = "Exclusão do ISS da BC PIS/Cofins Negado";
+    }
+    document.getElementById("aprovacao").innerHTML += "<br>" + resultado14;
+    
+    var resultado15;
+    if ((regime == "Simples Nacional") && (ramo == "Clínica Médica / Odontologia" || ramo == "Bar / Padaria / Pizzaria / Restaurante" || ramo == "Posto de Combustível / Distribuidora de Gás" || ramo == "Clínica Veterinária / Agropecuária" || ramo == "Mercado / Distr. de alimentos / Açougue" || ramo == "Cosméticos e perfumaria" || ramo == "Transportadora de mercadorias" || ramo == "Conveniência (loja de bebidas)" || ramo == "Farmácias" || ramo == "Turismo / Hotel / Transporte de pessoas" || ramo == "Loja de Peças / Pneus" || ramo == "Indústria em geral") && (faturamento == "Até R$ 10.000,00" || faturamento == "Até R$ 50.000,00" || faturamento == "Até R$ 100.000,00" || faturamento == "Entre R$ 100.000,00 e R$ 500.000,00" || faturamento == "Acima de R$ 500.000,00")) {
+      resultado15 = "Simples Nacional (Produtos monofásicos) Aprovado";
+    } else {
+      resultado15 = "Simples Nacional (Produtos monofásicos) Negado";
+    }
+    document.getElementById("aprovacao").innerHTML += "<br>" + resultado15;
+
+  } 
+
+  else {
+    alert("Responda corretamente");
+  }
+}
+
+</script>
+
+</body>
+</html>
